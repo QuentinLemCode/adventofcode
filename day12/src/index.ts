@@ -1,4 +1,3 @@
-import { cp } from 'fs';
 import { ReadFile } from './fileread';
 
 const file = new ReadFile('input.txt');
@@ -28,21 +27,36 @@ class Graph {
       return;
     }
 
-    this.traverse(start, []);
-    console.log(this.paths.join('\n'));
+    const smallCaves = Array.from(this.vertices.values()).filter(
+      v => !(v.big || v.isStartOrEnd)
+    );
+    for (const smallCave of smallCaves) {
+      smallCaves.forEach(sc => (sc.visitTwice = false));
+      smallCave.visitTwice = true;
+      this.traverse(start, []);
+    }
+    console.log(this.paths.length);
   }
 
   private traverse(vertex: Vertex, stack: Edge[]) {
     for (const edge of vertex.getEdges()) {
       const destination = edge.getDestinationVertex(vertex);
+      const destinationOccurence = this.stackToVertices(stack).filter(
+        v => v === destination
+      ).length;
       if (
-        this.stackToVertices(stack).includes(destination) &&
-        !destination.big
+        (destinationOccurence > 0 &&
+          !destination.big &&
+          !destination.visitTwice) ||
+        (destination.visitTwice && destinationOccurence > 1)
       ) {
         continue;
       }
       if (destination.name === 'end') {
-        this.paths.push(this.stackToString(stack.concat(edge)));
+        const str = this.stackToString(stack.concat(edge));
+        if (!this.paths.includes(str)) {
+          this.paths.push(str);
+        }
         continue;
       }
       stack.push(edge);
@@ -85,12 +99,18 @@ class Edge {
 class Vertex {
   name: string;
   edges: Set<Edge> = new Set();
+  visitTwice = false;
+
   addEdge(edge: Edge) {
     this.edges.add(edge);
   }
 
   getEdges() {
     return Array.from(this.edges);
+  }
+
+  get isStartOrEnd(): boolean {
+    return this.name === 'start' || this.name === 'end';
   }
 
   get big(): boolean {
