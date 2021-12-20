@@ -7,7 +7,7 @@ type Edge = {
   weight: number;
 };
 
-const rawNodes: number[][] = [];
+let rawNodes: number[][] = [];
 class Graph {
   nodes: number[] = [];
   edges: Edge[][] = [];
@@ -85,8 +85,37 @@ function createGraph(): Graph {
   return graph;
 }
 
+function makeTiles() {
+  const width = rawNodes[0].length;
+  const heigth = rawNodes.length;
+
+  const newNodes = JSON.parse(JSON.stringify(rawNodes));
+
+  for (let i = 0; i < 5; i++) {
+    for (let j = 0; j < 5; j++) {
+      if (i === 0 && j === 0) {
+        continue;
+      }
+      rawNodes.forEach((line, xIndex) => {
+        line.forEach((node, yIndex) => {
+          let newValue = node + i + j;
+          if (newValue >= 10) {
+            newValue -= 9;
+          }
+          if (!newNodes[heigth * i + xIndex]) {
+            newNodes[heigth * i + xIndex] = [];
+          }
+          newNodes[heigth * i + xIndex][width * j + yIndex] = newValue;
+        });
+      });
+    }
+  }
+  rawNodes = newNodes;
+}
+
 async function process() {
   await file.applyFunction(onEachLine);
+  makeTiles();
   const g = createGraph();
   console.log(g.shortestPath(0)[g.lastId - 1]);
 }

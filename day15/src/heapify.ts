@@ -8,24 +8,17 @@
 
 // this is just to make it clear that we are using a 1-based array; changing it to zero won't work without code changes
 const ROOT_INDEX = 1;
-
 export default class Heapify {
   _capacity: number;
-  _keys: Uint32Array;
-  _priorities: Uint32Array;
+  _keys: number[];
+  _priorities: number[];
   _hasPoppedElement: boolean;
   length: number;
 
-  constructor(
-    capacity = 64,
-    keys = [],
-    priorities = [],
-    KeysBackingArrayType = Uint32Array,
-    PrioritiesBackingArrayType = Uint32Array
-  ) {
+  constructor(capacity = 64, keys = [], priorities = []) {
     this._capacity = capacity;
-    this._keys = new KeysBackingArrayType(capacity + ROOT_INDEX);
-    this._priorities = new PrioritiesBackingArrayType(capacity + ROOT_INDEX);
+    this._keys = [];
+    this._priorities = [];
     // to keep track of whether the first element is a deleted one
     this._hasPoppedElement = false;
 
