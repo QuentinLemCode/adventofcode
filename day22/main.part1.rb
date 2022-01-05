@@ -29,9 +29,7 @@ def process
     for x in xr.limit(-50, 50)
       for y in yr.limit(-50, 50)
         for z in zr.limit(-50, 50)
-          if z <= 50 && z >= -50
-            cubes[x.to_s + "/" + y.to_s + "/" + z.to_s] = power.to_sym
-          end
+          cubes[x.to_s + "/" + y.to_s + "/" + z.to_s] = power.to_sym
         end
       end
     end
